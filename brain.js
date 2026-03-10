@@ -3,18 +3,20 @@ const cors = require("cors");
 const fs = require("fs");
 
 const app = express();
-app.use(cors());
-app.use(express.json());
-
 const PORT = process.env.PORT || 3000;
 const MEMORY_FILE = "memory.json";
 
+app.use(cors());
+app.use(express.json());
+
 let memory = [];
 
+// Load memory on startup
 if (fs.existsSync(MEMORY_FILE)) {
   try {
-    memory = JSON.parse(fs.readFileSync(MEMORY_FILE, "utf8"));
-  } catch (err) {
+    const data = fs.readFileSync(MEMORY_FILE, "utf8");
+    memory = JSON.parse(data);
+  } catch (error) {
     console.log("Could not load memory.json");
     memory = [];
   }
@@ -31,8 +33,24 @@ async function getAIResponse(question) {
     return "Hello! I am your AI.";
   }
 
+  if (lower.includes("how are you")) {
+    return "I am doing well. I am ready to help.";
+  }
+
+  if (lower.includes("your name")) {
+    return "My name is Shaun AI.";
+  }
+
   return "You said: " + question;
 }
+
+app.get("/", (req, res) => {
+  res.send("Shaun AI backend is running.");
+});
+
+app.get("/memory", (req, res) => {
+  res.json(memory);
+});
 
 app.post("/ask", async (req, res) => {
   const question = req.body.question;
@@ -45,17 +63,10 @@ app.post("/ask", async (req, res) => {
 
   memory.push({ role: "user", content: question });
   memory.push({ role: "assistant", content: answer });
+
   saveMemory();
 
-  res.json({ answer });
-});
-
-app.get("/memory", (req, res) => {
-  res.json(memory);
-});
-
-app.get("/", (req, res) => {
-  res.send("Shaun AI backend is running.");
+  res.json({ answer: answer });
 });
 
 app.listen(PORT, () => {

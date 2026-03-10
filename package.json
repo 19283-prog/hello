@@ -1,18 +1,1 @@
-{
-  "name": "mkdir-shaun-ai",
-  "version": "1.0.0",
-  "description": "",
-  "main": "brain.js",
-  "scripts": {
-  "start": "node brain.js"
-},
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "cors": "^2.8.6",
-    "express": "^5.2.1"
-  },
-  "devDependencies": {}
-}
+[]

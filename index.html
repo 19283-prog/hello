@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shaun AI</title>
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -15,6 +18,7 @@
       justify-content: center;
       align-items: center;
     }
+
     .chat-app {
       width: 100%;
       max-width: 900px;
@@ -24,15 +28,18 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     }
+
     .chat-header {
       background: #111827;
       color: white;
       padding: 16px 20px;
       font-size: 22px;
       font-weight: bold;
+      text-align: center;
     }
+
     .chat-box {
       flex: 1;
       overflow-y: auto;
@@ -42,19 +49,31 @@
       flex-direction: column;
       gap: 14px;
     }
+
     .message-row {
       display: flex;
       width: 100%;
     }
-    .user-row { justify-content: flex-end; }
-    .ai-row { justify-content: flex-start; }
-    .message-wrap { max-width: 75%; }
+
+    .user-row {
+      justify-content: flex-end;
+    }
+
+    .ai-row {
+      justify-content: flex-start;
+    }
+
+    .message-wrap {
+      max-width: 75%;
+    }
+
     .label {
       font-size: 12px;
       margin-bottom: 4px;
       font-weight: bold;
       opacity: 0.7;
     }
+
     .message {
       padding: 12px 16px;
       border-radius: 18px;
@@ -63,17 +82,20 @@
       white-space: pre-wrap;
       word-wrap: break-word;
     }
+
     .user-message {
       background: #2563eb;
       color: white;
       border-bottom-right-radius: 6px;
     }
+
     .ai-message {
       background: white;
       color: #111827;
       border: 1px solid #d1d5db;
       border-bottom-left-radius: 6px;
     }
+
     .chat-input-area {
       display: flex;
       gap: 10px;
@@ -81,6 +103,7 @@
       border-top: 1px solid #ddd;
       background: white;
     }
+
     .chat-input-area input {
       flex: 1;
       padding: 14px;
@@ -89,6 +112,7 @@
       border-radius: 12px;
       outline: none;
     }
+
     .chat-input-area button {
       padding: 14px 20px;
       font-size: 16px;
@@ -99,12 +123,17 @@
       border-radius: 12px;
       cursor: pointer;
     }
+
+    .chat-input-area button:hover {
+      background: #1d4ed8;
+    }
   </style>
 </head>
 <body>
   <div class="chat-app">
     <div class="chat-header">Shaun AI</div>
     <div class="chat-box" id="chatBox"></div>
+
     <div class="chat-input-area">
       <input type="text" id="userInput" placeholder="Type your message..." />
       <button onclick="sendMessage()">Send</button>
@@ -159,7 +188,7 @@
         addMessage("ai", data.answer);
       } catch (error) {
         addMessage("ai", "Error: Could not connect to server.");
-        console.error(error);
+        console.error("Send error:", error);
       }
     }
 
@@ -169,8 +198,11 @@
         const memory = await response.json();
 
         for (const item of memory) {
-          if (item.role === "user") addMessage("user", item.content);
-          if (item.role === "assistant") addMessage("ai", item.content);
+          if (item.role === "user") {
+            addMessage("user", item.content);
+          } else if (item.role === "assistant") {
+            addMessage("ai", item.content);
+          }
         }
       } catch (error) {
         console.error("Could not load memory:", error);
