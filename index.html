@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shaun AI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat-app {
+      width: 100%;
+      max-width: 900px;
+      height: 95vh;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: #1f2937;
+      color: white;
+      padding: 18px 24px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #eef2f7;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message-row {
+      display: flex;
+      width: 100%;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      line-height: 1.5;
+      font-size: 16px;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .user-row {
+      justify-content: flex-end;
+    }
+
+    .user-message {
+      background: #2563eb;
+      color: white;
+      border-bottom-right-radius: 6px;
+    }
+
+    .ai-row {
+      justify-content: flex-start;
+    }
+
+    .ai-message {
+      background: white;
+      color: #111827;
+      border: 1px solid #d1d5db;
+      border-bottom-left-radius: 6px;
+    }
+
+    .chat-input-area {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      border-top: 1px solid #ddd;
+      background: white;
+    }
+
+    .chat-input-area input {
+      flex: 1;
+      padding: 14px;
+      font-size: 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      outline: none;
+    }
+
+    .chat-input-area input:focus {
+      border-color: #2563eb;
+    }
+
+    .chat-input-area button {
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .chat-input-area button:hover {
+      background: #1d4ed8;
+    }
+
+    .label {
+      font-size: 12px;
+      margin-bottom: 4px;
+      opacity: 0.7;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-app">
+    <div class="chat-header">Shaun AI</div>
+
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="chat-input-area">
+      <input type="text" id="userInput" placeholder="Type your message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chatBox");
+    const userInput = document.getElementById("userInput");
+
+    function addMessage(sender, text) {
+      const row = document.createElement("div");
+      row.classList.add("message-row");
+
+      const wrapper = document.createElement("div");
+      const label = document.createElement("div");
+      const bubble = document.createElement("div");
+
+      label.classList.add("label");
+      bubble.classList.add("message");
+
+      if (sender === "user") {
+        row.classList.add("user-row");
+        bubble.classList.add("user-message");
+        label.textContent = "You";
+      } else {
+        row.classList.add("ai-row");
+        bubble.classList.add("ai-message");
+        label.textContent = "AI";
+      }
+
+      bubble.textContent = text;
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(bubble);
+      row.appendChild(wrapper);
+      chatBox.appendChild(row);
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const message = userInput.value.trim();
+      if (!message) return;
+
+      addMessage("user", message);
+      userInput.value = "";
+
+      try {
+        const response = await fetch("http://localhost:3000/ask", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ question: message })
+        });
+
+        const data = await response.json();
+        addMessage("ai", data.answer);
+      } catch (error) {
+        addMessage("ai", "Error: Could not connect to AI server.");
+        console.error(error);
+      }
+    }
+
+    userInput.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
+    });
+
+    async function loadMemory() {
+      try {
+        const response = await fetch("http://localhost:3000/memory");
+        const memory = await response.json();
+
+        for (const item of memory) {
+          if (item.role === "user") {
+            addMessage("user", item.content);
+          } else if (item.role === "assistant") {
+            addMessage("ai", item.content);
+          }
+        }
+      } catch (error) {
+        console.error("Could not load memory:", error);
+      }
+    }
+
+    loadMemory();
+  </script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+AI PROJECT DEVELOPMENT NOTES
+Author: Shaun
+Project: Local AI Assistant
+Goal: Build a free AI assistant from scratch that runs on my computer.
+
+--------------------------------------------------
+
+PROJECT GOAL
+
+Create a simple AI assistant that:
+
+- runs locally
+- has a web interface
+- remembers conversations
+- can later learn new information
+- can eventually use tools like code cracking and web reading
+
+The project should be completely free and understandable.
+
+--------------------------------------------------
+
+PROJECT FOLDER STRUCTURE
+
+Example folder layout:
+
+shaun-ai/
+  brain.js
+  index.html
+  memory.json
+  package.json
+  dev-notes.txt
+
+Explanation of files:
+
+brain.js
+Main AI server.
+Contains the AI logic and memory system.
+
+index.html
+Browser interface used to talk to the AI.
+
+memory.json
+Stores the conversation history so the AI remembers after restarting.
+
+package.json
+Created by npm. Keeps track of project dependencies.
+
+dev-notes.txt
+Development notes and documentation.
+
+--------------------------------------------------
+
+TECHNOLOGIES USED
+
+Node.js
+Runs JavaScript outside the browser.
+Used to run the AI server.
+
+Command to start the AI:
+
+node brain.js
+
+
+Express
+A lightweight Node.js web server framework.
+
+Used to create endpoints like:
+
+POST /ask
+GET /memory
+
+
+CORS
+Allows the browser page to communicate with the local server.
+
+Without CORS the browser blocks requests.
+
+
+File System (fs)
+Used to store memory on disk.
+
+Example file:
+
+memory.json
+
+--------------------------------------------------
+
+HOW THE SYSTEM WORKS
+
+The system architecture looks like this:
+
+Browser Page
+    ↓
+index.html
+    ↓
+HTTP Request
+    ↓
+Node Server
+    ↓
+brain.js
+    ↓
+AI Logic
+    ↓
+Response
+    ↓
+Browser Displays Answer
+
+--------------------------------------------------
+
+CURRENT AI FEATURES
+
+1. Rule-Based Responses
+
+The AI currently responds using simple rules.
+
+Example:
+
+if question contains "hello"
+    return "Hello! I am your AI."
+
+This type of AI is called rule-based AI.
+
+
+2. Conversation Memory
+
+Memory is stored in a variable:
+
+let memory = []
+
+Every question asked is saved in this array.
+
+
+3. Persistent Memory
+
+Memory is saved to a file:
+
+memory.json
+
+Process:
+
+User asks question
+↓
+AI responds
+↓
+AI saves question to memory.json
+
+When the AI server starts:
+
+brain.js loads memory.json
+
+
+4. Page Refresh Memory
+
+When the page loads it asks the server for stored memory.
+
+GET /memory
+
+The browser then displays the stored conversation.
+
+
+--------------------------------------------------
+
+BUGS ENCOUNTERED AND FIXES
+
+Bug #1
+
+AI responded:
+
+"You said: what did I say"
+
+Cause:
+The program saved the question before generating the answer.
+
+Fix:
+Move memory.push() after the AI generates the response.
+
+
+Bug #2
+
+Server error:
+
+SyntaxError: Unexpected end of input
+
+Cause:
+Incomplete code line:
+
+app.listen(3000, () =>
+
+Fix:
+
+app.listen(3000, () => {
+    console.log("AI running on http://localhost:3000");
+});
+
+
+--------------------------------------------------
+
+COMMANDS USED
+
+Create project:
+
+npm init -y
+
+
+Install server tools:
+
+npm install express cors
+
+
+Run AI:
+
+node brain.js
+
+
+Stop AI:
+
+Ctrl + C
+
+
+Open files in Notepad:
+
+notepad brain.js
+notepad index.html
+
+
+--------------------------------------------------
+
+WHAT HAS BEEN BUILT SO FAR
+
+Working AI assistant with:
+
+- Node server
+- Browser interface
+- Rule-based responses
+- Conversation memory
+- Persistent memory storage
+- Memory reload after page refresh
+
+
+--------------------------------------------------
+
+PLANNED FUTURE FEATURES
+
+1. Learning System
+
+Allow the user to teach the AI new information.
+
+Example:
+
+User: pizza is food
+AI learns it
+
+Saved in a knowledge file.
+
+
+2. Full Chat History
+
+Store both:
+
+User message
+AI response
+
+Instead of storing only the question.
+
+
+3. Better Reasoning
+
+Improve the AI logic beyond simple rules.
+
+
+4. Tools System
+
+Add capabilities like:
+
+- code cracking
+- math solving
+- text analysis
+- file reading
+- website reading
+
+
+--------------------------------------------------
+
+LONG TERM VISION
+
+Build a modular AI system:
+
+AI Assistant
+    ↓
+Memory System
+    ↓
+Learning System
+    ↓
+Tools
+
+Possible tools:
+
+- search
+- code analysis
+- cipher cracking
+- file processing
+
+
+--------------------------------------------------
+
+IMPORTANT DEVELOPMENT LESSON
+
+Build in stages:
+
+rules → memory → learning → tools
+
+Trying to build everything at once leads to confusion.
+
+
+--------------------------------------------------
+
+NEXT DEVELOPMENT STEP
+
+Upgrade memory to store both:
+
+User messages
+AI responses
+
+This will create a real chat log system.
+
+--------------------------------------------------
