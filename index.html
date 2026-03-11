@@ -3,216 +3,387 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shaun AI</title>
+  <title>Cortex AI</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f3f4f6;
+      background: #f4f4f4;
       height: 100vh;
       display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
-    .chat-app {
-      width: 100%;
-      max-width: 900px;
-      height: 95vh;
-      background: white;
-      border-radius: 18px;
+    .sidebar {
+      width: 280px;
+      background: #202123;
+      color: white;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      padding: 12px;
+      box-sizing: border-box;
     }
 
-    .chat-header {
-      background: #111827;
+    .sidebar h2 {
+      margin: 0 0 12px 0;
+      font-size: 20px;
+    }
+
+    .new-chat-btn {
+      background: #10a37f;
       color: white;
-      padding: 16px 20px;
-      font-size: 22px;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .new-chat-btn:hover {
+      background: #0e8e6d;
+    }
+
+    .chat-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .chat-item {
+      background: #2b2c2f;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-item.active {
+      background: #3a3b3f;
+    }
+
+    .chat-title {
+      flex: 1;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .delete-btn {
+      background: #b00020;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      padding: 6px 8px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .delete-btn:hover {
+      background: #8f0019;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .topbar {
+      background: white;
+      border-bottom: 1px solid #ddd;
+      padding: 12px 16px;
       font-weight: bold;
-      text-align: center;
     }
 
     .chat-box {
       flex: 1;
       overflow-y: auto;
       padding: 20px;
-      background: #e5e7eb;
+      box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-    }
-
-    .message-row {
-      display: flex;
-      width: 100%;
-    }
-
-    .user-row {
-      justify-content: flex-end;
-    }
-
-    .ai-row {
-      justify-content: flex-start;
-    }
-
-    .message-wrap {
-      max-width: 75%;
-    }
-
-    .label {
-      font-size: 12px;
-      margin-bottom: 4px;
-      font-weight: bold;
-      opacity: 0.7;
     }
 
     .message {
-      padding: 12px 16px;
-      border-radius: 18px;
-      line-height: 1.5;
-      font-size: 16px;
+      max-width: 70%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      line-height: 1.4;
       white-space: pre-wrap;
       word-wrap: break-word;
     }
 
-    .user-message {
-      background: #2563eb;
+    .user {
+      align-self: flex-end;
+      background: #10a37f;
       color: white;
-      border-bottom-right-radius: 6px;
     }
 
-    .ai-message {
+    .assistant {
+      align-self: flex-start;
       background: white;
-      color: #111827;
-      border: 1px solid #d1d5db;
-      border-bottom-left-radius: 6px;
+      border: 1px solid #ddd;
+      color: #222;
     }
 
-    .chat-input-area {
+    .input-row {
       display: flex;
       gap: 10px;
-      padding: 16px;
-      border-top: 1px solid #ddd;
-      background: white;
-    }
-
-    .chat-input-area input {
-      flex: 1;
       padding: 14px;
-      font-size: 16px;
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
-      outline: none;
+      background: white;
+      border-top: 1px solid #ddd;
+      box-sizing: border-box;
     }
 
-    .chat-input-area button {
-      padding: 14px 20px;
-      font-size: 16px;
-      font-weight: bold;
-      background: #2563eb;
-      color: white;
+    .input-row input {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .input-row button {
+      padding: 12px 18px;
       border: none;
-      border-radius: 12px;
+      background: #10a37f;
+      color: white;
+      border-radius: 8px;
       cursor: pointer;
+      font-size: 14px;
     }
 
-    .chat-input-area button:hover {
-      background: #1d4ed8;
+    .input-row button:hover {
+      background: #0e8e6d;
+    }
+
+    .empty-state {
+      color: #666;
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    @media (max-width: 800px) {
+      .sidebar {
+        width: 220px;
+      }
+
+      .message {
+        max-width: 85%;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="chat-app">
-    <div class="chat-header">Shaun AI</div>
+  <div class="sidebar">
+    <h2>Cortex AI</h2>
+    <button class="new-chat-btn" onclick="createNewChat()">+ New Chat</button>
+    <div class="chat-list" id="chatList"></div>
+  </div>
+
+  <div class="main">
+    <div class="topbar" id="chatHeader">Chat</div>
     <div class="chat-box" id="chatBox"></div>
 
-    <div class="chat-input-area">
-      <input type="text" id="userInput" placeholder="Type your message..." />
+    <div class="input-row">
+      <input
+        type="text"
+        id="userInput"
+        placeholder="Type your message..."
+        onkeydown="handleEnter(event)"
+      />
       <button onclick="sendMessage()">Send</button>
     </div>
   </div>
 
   <script>
-    const API_BASE = "https://shaun-ai-backend.onrender.com";
-    const chatBox = document.getElementById("chatBox");
-    const userInput = document.getElementById("userInput");
+    const API_BASE = "";
 
-    function addMessage(sender, text) {
-      const row = document.createElement("div");
-      row.classList.add("message-row", sender === "user" ? "user-row" : "ai-row");
+    let userId = localStorage.getItem("cortexUserId");
+    let currentChatId = localStorage.getItem("cortexCurrentChatId");
 
-      const wrap = document.createElement("div");
-      wrap.classList.add("message-wrap");
+    if (!userId) {
+      userId = crypto.randomUUID();
+      localStorage.setItem("cortexUserId", userId);
+    }
 
-      const label = document.createElement("div");
-      label.classList.add("label");
-      label.textContent = sender === "user" ? "You" : "AI";
+    function saveCurrentChatId(chatId) {
+      currentChatId = chatId;
+      localStorage.setItem("cortexCurrentChatId", chatId);
+    }
 
-      const bubble = document.createElement("div");
-      bubble.classList.add("message", sender === "user" ? "user-message" : "ai-message");
-      bubble.textContent = text;
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
 
-      wrap.appendChild(label);
-      wrap.appendChild(bubble);
-      row.appendChild(wrap);
-      chatBox.appendChild(row);
+    function renderMessages(messages) {
+      const chatBox = document.getElementById("chatBox");
+      chatBox.innerHTML = "";
+
+      if (!messages || messages.length === 0) {
+        chatBox.innerHTML = `<div class="empty-state">Start a new conversation.</div>`;
+        return;
+      }
+
+      messages.forEach((msg) => {
+        const div = document.createElement("div");
+        div.className = `message ${msg.role}`;
+        div.innerHTML = escapeHtml(msg.content);
+        chatBox.appendChild(div);
+      });
 
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    async function sendMessage() {
-      const message = userInput.value.trim();
-      if (!message) return;
+    function renderChatList(chats) {
+      const chatList = document.getElementById("chatList");
+      chatList.innerHTML = "";
 
-      addMessage("user", message);
-      userInput.value = "";
+      chats.forEach((chat) => {
+        const item = document.createElement("div");
+        item.className = "chat-item" + (chat.id === currentChatId ? " active" : "");
+
+        const title = document.createElement("div");
+        title.className = "chat-title";
+        title.textContent = chat.title || "New Chat";
+        title.onclick = () => loadChat(chat.id);
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "delete-btn";
+        delBtn.textContent = "Delete";
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteChat(chat.id);
+        };
+
+        item.appendChild(title);
+        item.appendChild(delBtn);
+        item.onclick = () => loadChat(chat.id);
+
+        chatList.appendChild(item);
+      });
+    }
+
+    async function loadConversations() {
+      const res = await fetch(`${API_BASE}/conversations?userId=${encodeURIComponent(userId)}`);
+      const data = await res.json();
+
+      if (!currentChatId && data.currentChatId) {
+        saveCurrentChatId(data.currentChatId);
+      }
+
+      const chatExists = data.chats.some(chat => chat.id === currentChatId);
+      if (!chatExists && data.currentChatId) {
+        saveCurrentChatId(data.currentChatId);
+      }
+
+      renderChatList(data.chats);
+
+      if (currentChatId) {
+        await loadChat(currentChatId);
+      }
+    }
+
+    async function loadChat(chatId) {
+      const res = await fetch(`${API_BASE}/conversations/${chatId}?userId=${encodeURIComponent(userId)}`);
+      const chat = await res.json();
+
+      saveCurrentChatId(chat.id);
+      document.getElementById("chatHeader").textContent = chat.title || "Chat";
+      renderMessages(chat.messages);
+
+      const listRes = await fetch(`${API_BASE}/conversations?userId=${encodeURIComponent(userId)}`);
+      const listData = await listRes.json();
+      renderChatList(listData.chats);
+    }
+
+    async function createNewChat() {
+      const res = await fetch(`${API_BASE}/conversations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ userId })
+      });
+
+      const data = await res.json();
+      saveCurrentChatId(data.chat.id);
+
+      await loadConversations();
+    }
+
+    async function deleteChat(chatId) {
+      const confirmed = confirm("Delete this chat?");
+      if (!confirmed) return;
+
+      const res = await fetch(`${API_BASE}/conversations/${chatId}?userId=${encodeURIComponent(userId)}`, {
+        method: "DELETE"
+      });
+
+      const data = await res.json();
+      saveCurrentChatId(data.currentChatId);
+
+      await loadConversations();
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const text = input.value.trim();
+
+      if (!text || !currentChatId) return;
+
+      input.value = "";
+
+      const chatBox = document.getElementById("chatBox");
+
+      const userDiv = document.createElement("div");
+      userDiv.className = "message user";
+      userDiv.textContent = text;
+      chatBox.appendChild(userDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
-        const response = await fetch(`${API_BASE}/ask`, {
+        const res = await fetch(`${API_BASE}/ask`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ question: message })
+          body: JSON.stringify({
+            userId,
+            chatId: currentChatId,
+            message: text
+          })
         });
 
-        const data = await response.json();
-        addMessage("ai", data.answer);
+        const data = await res.json();
+
+        document.getElementById("chatHeader").textContent = data.chat.title || "Chat";
+        renderMessages(data.chat.messages);
+
+        const listRes = await fetch(`${API_BASE}/conversations?userId=${encodeURIComponent(userId)}`);
+        const listData = await listRes.json();
+        renderChatList(listData.chats);
       } catch (error) {
-        addMessage("ai", "Error: Could not connect to server.");
-        console.error("Send error:", error);
+        const errDiv = document.createElement("div");
+        errDiv.className = "message assistant";
+        errDiv.textContent = "Error: could not contact the server.";
+        chatBox.appendChild(errDiv);
       }
     }
 
-    async function loadMemory() {
-      try {
-        const response = await fetch(`${API_BASE}/memory`);
-        const memory = await response.json();
-
-        for (const item of memory) {
-          if (item.role === "user") addMessage("user", item.content);
-          if (item.role === "assistant") addMessage("ai", item.content);
-        }
-      } catch (error) {
-        console.error("Could not load memory:", error);
-      }
-    }
-
-    userInput.addEventListener("keypress", function(event) {
+    function handleEnter(event) {
       if (event.key === "Enter") {
         sendMessage();
       }
-    });
+    }
 
-    loadMemory();
+    loadConversations();
   </script>
 </body>
 </html>
