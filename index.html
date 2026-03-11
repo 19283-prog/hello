@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI/BROWSER</title>
+  <title>Shaun AI</title>
   <style>
     * {
       box-sizing: border-box;
@@ -131,7 +131,7 @@
 </head>
 <body>
   <div class="chat-app">
-    <div class="chat-header">AI/BROWSER</div>
+    <div class="chat-header">Shaun AI</div>
     <div class="chat-box" id="chatBox"></div>
 
     <div class="chat-input-area">
@@ -198,11 +198,8 @@
         const memory = await response.json();
 
         for (const item of memory) {
-          if (item.role === "user") {
-            addMessage("user", item.content);
-          } else if (item.role === "assistant") {
-            addMessage("ai", item.content);
-          }
+          if (item.role === "user") addMessage("user", item.content);
+          if (item.role === "assistant") addMessage("ai", item.content);
         }
       } catch (error) {
         console.error("Could not load memory:", error);

@@ -11,7 +11,6 @@ app.use(express.json());
 
 let memory = [];
 
-// Load memory on startup
 if (fs.existsSync(MEMORY_FILE)) {
   try {
     const data = fs.readFileSync(MEMORY_FILE, "utf8");
@@ -66,7 +65,7 @@ app.post("/ask", async (req, res) => {
 
   saveMemory();
 
-  res.json({ answer: answer });
+  res.json({ answer });
 });
 
 app.listen(PORT, () => {
